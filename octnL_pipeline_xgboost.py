@@ -1,8 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[45]:
-
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -12,16 +7,9 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 
 
-# In[46]:
-
-
 import warnings
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
-
-
-# In[ ]:
-
 
 import numpy as np
 
@@ -34,16 +22,9 @@ data['EDSS_Binary'] = data['EDSS_Binary'].replace({'Not Severe': 0, 'Severe': 1}
 # Replace 'inf' and '-inf' with 'NaN'
 data.replace([np.inf, -np.inf], np.nan, inplace=True)
 
-
-# In[48]:
-
-
 # separate features and target
 X = data.drop(columns=['EDSS_Binary', 'PatientID'])
 y = data['EDSS_Binary']
-
-
-# In[49]:
 
 
 # Preprocessing
@@ -68,9 +49,6 @@ preprocessor = ColumnTransformer([
 ])
 
 
-# In[ ]:
-
-
 # split data
 X_preprocessed = preprocessor.fit_transform(X)
 X_train, X_test, y_train, y_test = train_test_split(X_preprocessed, y, test_size=0.3, stratify=y, random_state=42)
@@ -84,9 +62,6 @@ print(pd.Series(y_train).value_counts())
 
 print("\nClass distribution in test set:")
 print(pd.Series(y_test).value_counts())
-
-
-# In[ ]:
 
 
 from imblearn.over_sampling import SMOTENC
@@ -110,10 +85,6 @@ print(pd.Series(y_train_resampled).value_counts())
 
 print("Proportion of the Minority Class in train set:" + str(round(y_train.sum()/len(y_train)*100,2)) + "%")
 print("Proportion of the Minority Class in test set:"+ str(round(y_test.sum()/len(y_test)*100,2)) + "%")
-
-
-# In[ ]:
-
 
 from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LogisticRegression
@@ -177,15 +148,8 @@ X_test_selected = X_test_df[selected_features]
 print("\nShape of data with selected features (training):", X_train_selected.shape)
 print("\nShape of data with selected features (test):", X_test_selected.shape)
 
-
-# In[54]:
-
-
 # correct number of rows
 y_train_resampled = y_train_resampled[:len(X_train_selected)]
-
-
-# In[ ]:
 
 
 import xgboost as xgb
@@ -194,26 +158,14 @@ import xgboost as xgb
 xgb_model = xgb.XGBClassifier(random_state=42)
 xgb_model.fit(X_train_selected, y_train_resampled)
 
-
-# In[56]:
-
-
 # predict and evaluate the model
 y_pred_xgb = xgb_model.predict(X_test_selected)
-
-
-# In[ ]:
-
 
 from sklearn.metrics import classification_report, confusion_matrix
 
 # classification report and confusion matrix
 print("XGBoost Classification Report:\n", classification_report(y_test, y_pred_xgb))
 print("XGBoost Confusion Matrix:\n", confusion_matrix(y_test, y_pred_xgb))
-
-
-# In[ ]:
-
 
 from sklearn.metrics import roc_auc_score, roc_curve
 from plotnine import ggplot, aes, geom_line, labs, theme_bw
@@ -241,10 +193,6 @@ roc_plot = (ggplot(roc_data, aes(x='False Positive Rate', y='True Positive Rate'
 
 roc_plot.show()
 
-
-# In[ ]:
-
-
 from xgboost import XGBClassifier
 from sklearn.model_selection import RandomizedSearchCV, cross_val_score
 import numpy as np
@@ -269,9 +217,6 @@ cv_scores_xgb = cross_val_score(xgb_random_search.best_estimator_, X_train_selec
 print("Cross-validation score for XGBoost:", cv_scores_xgb.mean())
 
 
-# In[ ]:
-
-
 # best XGBoost model
 best_xgb_model = xgb_random_search.best_estimator_
 
@@ -284,9 +229,6 @@ y_pred_xgb = best_xgb_model.predict(X_test_selected)
 # classification report and confusion matrix
 print("XGBoost Classification Report:\n", classification_report(y_test, y_pred_xgb))
 print("XGBoost Confusion Matrix:\n", confusion_matrix(y_test, y_pred_xgb))
-
-
-# In[ ]:
 
 
 from sklearn.metrics import balanced_accuracy_score, precision_recall_fscore_support
@@ -304,10 +246,6 @@ print(f"Precision: {precision[0]:.4f}")
 print(f"Recall: {recall[0]:.4f}")
 print(f"F1 Score: {f1_score[0]:.4f}")
 
-
-# In[ ]:
-
-
 import xgboost as xgb
 import matplotlib.pyplot as plt
 
@@ -322,10 +260,6 @@ xgb.plot_importance(best_xgb_model, importance_type='weight', max_num_features=2
 plt.title('XGBoost Feature Importance')
 plt.show()
 
-
-# In[ ]:
-
-
 # feature importance
 feature_importances_xgb = best_xgb_model.get_booster().get_score(importance_type='weight')
 
@@ -335,10 +269,6 @@ feature_importance_df = pd.DataFrame({
 }).sort_values(by='Importance', ascending=False)
 
 print(feature_importance_df)
-
-
-# In[ ]:
-
 
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, auc
