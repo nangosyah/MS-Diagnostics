@@ -1,8 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[47]:
-
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -12,15 +7,9 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 
 
-# In[48]:
-
-
 import warnings
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
-
-
-# In[ ]:
 
 
 import numpy as np
@@ -35,15 +24,9 @@ data['EDSS_Binary'] = data['EDSS_Binary'].replace({'Not Severe': 0, 'Severe': 1}
 data.replace([np.inf, -np.inf], np.nan, inplace=True)
 
 
-# In[50]:
-
-
 # separate features and target
 X = data.drop(columns=['EDSS_Binary', 'PatientID'])
 y = data['EDSS_Binary']
-
-
-# In[51]:
 
 
 # Preprocessing
@@ -68,9 +51,6 @@ preprocessor = ColumnTransformer([
 ])
 
 
-# In[ ]:
-
-
 # split data
 X_preprocessed = preprocessor.fit_transform(X)
 X_train, X_test, y_train, y_test = train_test_split(X_preprocessed, y, test_size=0.3, stratify=y, random_state=42)
@@ -84,9 +64,6 @@ print(pd.Series(y_train).value_counts())
 
 print("\nClass distribution in test set:")
 print(pd.Series(y_test).value_counts())
-
-
-# In[ ]:
 
 
 from imblearn.over_sampling import SMOTENC
@@ -110,9 +87,6 @@ print(pd.Series(y_train_resampled).value_counts())
 
 print("Proportion of the Minority Class in train set:" + str(round(y_train.sum()/len(y_train)*100,2)) + "%")
 print("Proportion of the Minority Class in test set:"+ str(round(y_test.sum()/len(y_test)*100,2)) + "%")
-
-
-# In[ ]:
 
 
 from sklearn.model_selection import GridSearchCV
@@ -177,15 +151,8 @@ X_test_selected = X_test_df[selected_features]
 print("\nShape of data with selected features (training):", X_train_selected.shape)
 print("\nShape of data with selected features (test):", X_test_selected.shape)
 
-
-# In[56]:
-
-
 # correct number of rows
 y_train_resampled = y_train_resampled[:len(X_train_selected)]
-
-
-# In[ ]:
 
 
 from sklearn.neighbors import KNeighborsClassifier
@@ -195,14 +162,8 @@ knn_model = KNeighborsClassifier()
 knn_model.fit(X_train_selected, y_train_resampled)
 
 
-# In[58]:
-
-
 # predict and evaluate the model
 y_pred_knn = knn_model.predict(X_test_selected)
-
-
-# In[ ]:
 
 
 from sklearn.metrics import classification_report, confusion_matrix
@@ -210,9 +171,6 @@ from sklearn.metrics import classification_report, confusion_matrix
 # classification report and confusion matrix
 print("Classification Report:\n", classification_report(y_test, y_pred_knn))
 print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred_knn))
-
-
-# In[ ]:
 
 
 from sklearn.metrics import roc_auc_score, roc_curve
@@ -241,10 +199,6 @@ roc_plot = (ggplot(roc_data_knn, aes(x='False Positive Rate', y='True Positive R
 
 roc_plot.show()
 
-
-# In[ ]:
-
-
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import RandomizedSearchCV, cross_val_score
 import numpy as np
@@ -268,9 +222,6 @@ cv_scores_knn = cross_val_score(knn_random_search.best_estimator_, X_train_selec
 print("Cross-validation score for KNN:", cv_scores_knn.mean())
 
 
-# In[ ]:
-
-
 # best KNN model
 best_knn_model = knn_random_search.best_estimator_
 
@@ -283,9 +234,6 @@ y_pred_knn = best_knn_model.predict(X_test_selected)
 # classification report and confusion matrix
 print("KNN Classification Report:\n", classification_report(y_test, y_pred_knn))
 print("KNN Confusion Matrix:\n", confusion_matrix(y_test, y_pred_knn))
-
-
-# In[ ]:
 
 
 from sklearn.metrics import balanced_accuracy_score, precision_recall_fscore_support
@@ -303,10 +251,6 @@ print(f"Precision: {precision[0]:.4f}")
 print(f"Recall: {recall[0]:.4f}")
 print(f"F1 Score: {f1_score[0]:.4f}")
 
-
-# In[ ]:
-
-
 from sklearn.inspection import permutation_importance
 import pandas as pd
 
@@ -320,9 +264,6 @@ feature_importance_df = pd.DataFrame({
 
 # feature importance
 print(feature_importance_df)
-
-
-# In[ ]:
 
 
 import matplotlib.pyplot as plt
@@ -339,9 +280,6 @@ plt.title('SVM Feature Importance')
 plt.gca().invert_yaxis()
 plt.tight_layout()
 plt.show()
-
-
-# In[ ]:
 
 
 import matplotlib.pyplot as plt
